@@ -38,6 +38,8 @@ With the use and feedback of the project, will user experience and function opti
 * ### [Flutter 完整开发实战详解(十四、混合开发打包 Android 篇)](https://juejin.im/post/5cf527036fb9a07ed911acd8)
 * ### [Flutter 完整开发实战详解(十五、全面理解State与Provider)](https://juejin.im/post/5d0634c7f265da1b91639232)
 * ### [Flutter 完整开发实战详解(十六、详解自定义布局实战)](https://juejin.im/post/5d1af0aee51d454fbf540a52)
+* ### [Flutter 完整开发实战详解(十七、 实用技巧与填坑二)](https://juejin.im/post/5d6cb579f265da03da24aeb9)
+* ### [Flutter 完整开发实战详解(十八、 神奇的ScrollPhysics与Simulation)](https://juejin.im/post/5d9067026fb9a04df00ece14)
 
 ----
 * ### [全网最全 Flutter 与 React Native 深入对比分析](https://juejin.im/post/5d0bac156fb9a07ec56e7f15)
@@ -55,7 +57,7 @@ With the use and feedback of the project, will user experience and function opti
 
 ### Operation instructions
 
-1. Configure the Flutter development environment (Tag of the current version of Flutter SDK  **1.7.8** ).
+1. Configure the Flutter development environment (Tag of the current version of Flutter SDK  **1.9.1** ).
 
 2. Clone code, execute `Packages get'to install third-party packages.
 
@@ -78,7 +80,7 @@ With the use and feedback of the project, will user experience and function opti
 
 4、Be careful
 
->### Local Flutter SDK version  1.7.8 or more. 2. Does the third-party package version in pubspec. yaml correspond to the third-party package version in pubspec. lock?
+>### Local Flutter SDK version  1.9.1 or more. 2. Does the third-party package version in pubspec. yaml correspond to the third-party package version in pubspec. lock?
 
 
 ## Project Structure
@@ -115,7 +117,7 @@ With the use and feedback of the project, will user experience and function opti
 
 ### Third-party framework
 
->Current Flutter SDK version **1.7.8**
+>Current Flutter SDK version **1.9.1**
 
 | 库                          | 功能             |
 | -------------------------- | -------------- |

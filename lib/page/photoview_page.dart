@@ -17,14 +17,13 @@ import 'package:photo_view/photo_view.dart';
  */
 
 class PhotoViewPage extends StatelessWidget {
-  final String url;
+  static const String sName = "PhotoViewPage";
 
-  PhotoViewPage(this.url);
+  PhotoViewPage();
 
   @override
   Widget build(BuildContext context) {
-    OptionControl optionControl = new OptionControl();
-    optionControl.url = url;
+    final String url = ModalRoute.of(context).settings.arguments;
     return new Scaffold(
         floatingActionButton: new FloatingActionButton(
           child: new Icon(Icons.file_download),
@@ -33,15 +32,20 @@ class PhotoViewPage extends StatelessWidget {
               if (res != null) {
                 Fluttertoast.showToast(msg: res);
                 if (Platform.isAndroid) {
-                  const updateAlbum = const MethodChannel('com.shuyu.gsygithub.gsygithubflutter/UpdateAlbumPlugin');
-                  updateAlbum.invokeMethod('updateAlbum', { 'path': res, 'name': CommonUtils.splitFileNameByPath(res)});
+                  const updateAlbum = const MethodChannel(
+                      'com.shuyu.gsygithub.gsygithubflutter/UpdateAlbumPlugin');
+                  updateAlbum.invokeMethod('updateAlbum', {
+                    'path': res,
+                    'name': CommonUtils.splitFileNameByPath(res)
+                  });
                 }
               }
             });
           },
         ),
         appBar: new AppBar(
-          title: GSYTitleBar("", rightWidget: new GSYCommonOptionWidget(optionControl)),
+          title:
+              GSYTitleBar("", rightWidget: new GSYCommonOptionWidget(url: url)),
         ),
         body: new Container(
           color: Colors.black,
@@ -50,8 +54,12 @@ class PhotoViewPage extends StatelessWidget {
             loadingChild: Container(
               child: new Stack(
                 children: <Widget>[
-                  new Center(child: new Image.asset(GSYICons.DEFAULT_IMAGE, height: 180.0, width: 180.0)),
-                  new Center(child: new SpinKitFoldingCube(color: Colors.white30, size: 60.0)),
+                  new Center(
+                      child: new Image.asset(GSYICons.DEFAULT_IMAGE,
+                          height: 180.0, width: 180.0)),
+                  new Center(
+                      child: new SpinKitFoldingCube(
+                          color: Colors.white30, size: 60.0)),
                 ],
               ),
             ),

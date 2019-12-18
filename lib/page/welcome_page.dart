@@ -4,7 +4,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:gsy_github_app_flutter/common/dao/user_dao.dart';
-import 'package:gsy_github_app_flutter/common/redux/gsy_state.dart';
+import 'package:gsy_github_app_flutter/redux/gsy_state.dart';
 import 'package:gsy_github_app_flutter/common/style/gsy_style.dart';
 import 'package:gsy_github_app_flutter/common/utils/navigator_utils.dart';
 import 'package:redux/redux.dart';
@@ -54,7 +54,7 @@ class _WelcomePageState extends State<WelcomePage> {
       builder: (context, store) {
         double size = 200;
         return new Container(
-          color: Color(GSYColors.white),
+          color: GSYColors.white,
           child: Stack(
             children: <Widget>[
               new Center(

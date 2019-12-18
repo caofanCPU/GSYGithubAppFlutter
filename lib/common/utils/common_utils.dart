@@ -2,22 +2,24 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gsy_github_app_flutter/common/config/config.dart';
 import 'package:gsy_github_app_flutter/common/local/local_storage.dart';
 import 'package:gsy_github_app_flutter/common/localization/default_localizations.dart';
 import 'package:gsy_github_app_flutter/common/net/address.dart';
-import 'package:gsy_github_app_flutter/common/redux/gsy_state.dart';
-import 'package:gsy_github_app_flutter/common/redux/locale_redux.dart';
-import 'package:gsy_github_app_flutter/common/redux/theme_redux.dart';
-import 'package:gsy_github_app_flutter/common/style/gsy_string_base.dart';
+import 'package:gsy_github_app_flutter/redux/gsy_state.dart';
+import 'package:gsy_github_app_flutter/redux/locale_redux.dart';
+import 'package:gsy_github_app_flutter/redux/theme_redux.dart';
+import 'package:gsy_github_app_flutter/common/localization/gsy_string_base.dart';
 import 'package:gsy_github_app_flutter/common/style/gsy_style.dart';
 import 'package:gsy_github_app_flutter/common/utils/navigator_utils.dart';
 import 'package:gsy_github_app_flutter/widget/gsy_flex_button.dart';
-import 'package:gsy_github_app_flutter/widget/issue_edit_dIalog.dart';
+import 'package:gsy_github_app_flutter/page/issue/issue_edit_dIalog.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path_provider/path_provider.dart';
@@ -40,6 +42,8 @@ class CommonUtils {
 
   static final double DAYS_LIMIT = 30 * HOURS_LIMIT;
 
+  static Locale curLocale;
+
   static String getDateStr(DateTime date) {
     if (date == null || date.toString() == null) {
       return "";
@@ -58,19 +62,33 @@ class CommonUtils {
 
   ///日期格式转换
   static String getNewsTimeStr(DateTime date) {
-    int subTime =
+    int subTimes =
         DateTime.now().millisecondsSinceEpoch - date.millisecondsSinceEpoch;
 
-    if (subTime < MILLIS_LIMIT) {
-      return "刚刚";
-    } else if (subTime < SECONDS_LIMIT) {
-      return (subTime / MILLIS_LIMIT).round().toString() + " 秒前";
-    } else if (subTime < MINUTES_LIMIT) {
-      return (subTime / SECONDS_LIMIT).round().toString() + " 分钟前";
-    } else if (subTime < HOURS_LIMIT) {
-      return (subTime / MINUTES_LIMIT).round().toString() + " 小时前";
-    } else if (subTime < DAYS_LIMIT) {
-      return (subTime / HOURS_LIMIT).round().toString() + " 天前";
+    if (subTimes < MILLIS_LIMIT) {
+      return (curLocale != null)
+          ? (curLocale.languageCode != "zh") ? "right now" : "刚刚"
+          : "刚刚";
+    } else if (subTimes < SECONDS_LIMIT) {
+      return (subTimes / MILLIS_LIMIT).round().toString() +
+          ((curLocale != null)
+              ? (curLocale.languageCode != "zh") ? " seconds ago" : " 秒前"
+              : " 秒前");
+    } else if (subTimes < MINUTES_LIMIT) {
+      return (subTimes / SECONDS_LIMIT).round().toString() +
+          ((curLocale != null)
+              ? (curLocale.languageCode != "zh") ? " min ago" : " 分钟前"
+              : " 分钟前");
+    } else if (subTimes < HOURS_LIMIT) {
+      return (subTimes / MINUTES_LIMIT).round().toString() +
+          ((curLocale != null)
+              ? (curLocale.languageCode != "zh") ? " hours ago" : " 小时前"
+              : " 小时前");
+    } else if (subTimes < DAYS_LIMIT) {
+      return (subTimes / HOURS_LIMIT).round().toString() +
+          ((curLocale != null)
+              ? (curLocale.languageCode != "zh") ? " days ago" : " 天前"
+              : " 天前");
     } else {
       return getDateStr(date);
     }
@@ -97,6 +115,22 @@ class CommonUtils {
     Directory appPath = Directory(appDocPath);
     await appPath.create(recursive: true);
     return appPath;
+  }
+
+  static String removeTextTag(String description) {
+    if (description != null) {
+      String reg = "<g-emoji.*?>.+?</g-emoji>";
+      RegExp tag = new RegExp(reg);
+      Iterable<Match> tags = tag.allMatches(description);
+      for (Match m in tags) {
+        String match = m
+            .group(0)
+            .replaceAll(new RegExp("<g-emoji.*?>"), "")
+            .replaceAll(new RegExp("</g-emoji>"), "");
+        description = description.replaceAll(new RegExp(m.group(0)), match);
+      }
+    }
+    return description;
   }
 
   static saveImage(String url) async {
@@ -148,17 +182,26 @@ class CommonUtils {
     return ThemeData(primarySwatch: color, platform: TargetPlatform.android);
   }
 
-
-  static showLanguageDialog(BuildContext context, Store store) {
+  static showLanguageDialog(BuildContext context) {
     List<String> list = [
-      CommonUtils.getLocale(context).home_language_default,
-      CommonUtils.getLocale(context).home_language_zh,
-      CommonUtils.getLocale(context).home_language_en,
+      GSYLocalizations.i18n(context).home_language_default,
+      GSYLocalizations.i18n(context).home_language_zh,
+      GSYLocalizations.i18n(context).home_language_en,
     ];
     CommonUtils.showCommitOptionDialog(context, list, (index) {
-      CommonUtils.changeLocale(store, index);
+      CommonUtils.changeLocale(StoreProvider.of<GSYState>(context), index);
       LocalStorage.save(Config.LOCALE, index.toString());
     }, height: 150.0);
+  }
+
+  ///获取设备信息
+  static Future<String> getDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      return "";
+    }
+    IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+    return iosInfo.model;
   }
 
   /**
@@ -166,6 +209,9 @@ class CommonUtils {
    */
   static changeLocale(Store<GSYState> store, int index) {
     Locale locale = store.state.platformLocale;
+    if (Config.DEBUG) {
+      print(store.state.platformLocale);
+    }
     switch (index) {
       case 1:
         locale = Locale('zh', 'CH');
@@ -174,11 +220,8 @@ class CommonUtils {
         locale = Locale('en', 'US');
         break;
     }
+    curLocale = locale;
     store.dispatch(RefreshLocaleAction(locale));
-  }
-
-  static GSYStringBase getLocale(BuildContext context) {
-    return GSYLocalizations.of(context).currentLocalized;
   }
 
   static List<Color> getThemeListColor() {
@@ -208,7 +251,7 @@ class CommonUtils {
   static copy(String data, BuildContext context) {
     Clipboard.setData(new ClipboardData(text: data));
     Fluttertoast.showToast(
-        msg: CommonUtils.getLocale(context).option_share_copy_success);
+        msg: GSYLocalizations.i18n(context).option_share_copy_success);
   }
 
   static launchUrl(context, String url) {
@@ -264,7 +307,7 @@ class CommonUtils {
       await launch(url);
     } else {
       Fluttertoast.showToast(
-          msg: CommonUtils.getLocale(context).option_web_launcher_error +
+          msg: GSYLocalizations.i18n(context).option_web_launcher_error +
               ": " +
               url);
     }
@@ -292,12 +335,11 @@ class CommonUtils {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         new Container(
-                            child:
-                                SpinKitCubeGrid(color: Color(GSYColors.white))),
+                            child: SpinKitCubeGrid(color: GSYColors.white)),
                         new Container(height: 10.0),
                         new Container(
                             child: new Text(
-                                CommonUtils.getLocale(context).loading_text,
+                                GSYLocalizations.i18n(context).loading_text,
                                 style: GSYConstant.normalTextWhite)),
                       ],
                     ),
@@ -353,7 +395,7 @@ class CommonUtils {
               padding: new EdgeInsets.all(4.0),
               margin: new EdgeInsets.all(20.0),
               decoration: new BoxDecoration(
-                color: Color(GSYColors.white),
+                color: GSYColors.white,
                 //用一个BoxDecoration装饰器提供背景图片
                 borderRadius: BorderRadius.all(Radius.circular(4.0)),
               ),
@@ -368,7 +410,7 @@ class CommonUtils {
                           ? colorList[index]
                           : Theme.of(context).primaryColor,
                       text: commitMaps[index],
-                      textColor: Color(GSYColors.white),
+                      textColor: GSYColors.white,
                       onPress: () {
                         Navigator.pop(context);
                         onTap(index);
@@ -387,20 +429,20 @@ class CommonUtils {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text(CommonUtils.getLocale(context).app_version_title),
+            title: new Text(GSYLocalizations.i18n(context).app_version_title),
             content: new Text(contentMsg),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: new Text(CommonUtils.getLocale(context).app_cancel)),
+                  child: new Text(GSYLocalizations.i18n(context).app_cancel)),
               new FlatButton(
                   onPressed: () {
                     launch(Address.updateUrl);
                     Navigator.pop(context);
                   },
-                  child: new Text(CommonUtils.getLocale(context).app_ok)),
+                  child: new Text(GSYLocalizations.i18n(context).app_ok)),
             ],
           );
         });

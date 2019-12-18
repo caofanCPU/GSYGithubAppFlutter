@@ -4,8 +4,8 @@ import 'package:gsy_github_app_flutter/common/dao/user_dao.dart';
 import 'package:gsy_github_app_flutter/common/utils/navigator_utils.dart';
 import 'package:gsy_github_app_flutter/widget/state/gsy_list_state.dart';
 import 'package:gsy_github_app_flutter/widget/pull/gsy_pull_load_widget.dart';
-import 'package:gsy_github_app_flutter/widget/repos_item.dart';
-import 'package:gsy_github_app_flutter/widget/user_item.dart';
+import 'package:gsy_github_app_flutter/page/repos/widget/repos_item.dart';
+import 'package:gsy_github_app_flutter/page/user/widget/user_item.dart';
 
 /**
  * 通用list
@@ -45,6 +45,12 @@ class _CommonListPageState extends State<CommonListPage>
     switch (widget.showType) {
       case 'repository':
         ReposViewModel reposViewModel = ReposViewModel.fromMap(data);
+        return new ReposItem(reposViewModel, onPressed: () {
+          NavigatorUtils.goReposDetail(
+              context, reposViewModel.ownerName, reposViewModel.repositoryName);
+        });
+      case 'repositoryql':
+        ReposViewModel reposViewModel = ReposViewModel.fromQL(data);
         return new ReposItem(reposViewModel, onPressed: () {
           NavigatorUtils.goReposDetail(
               context, reposViewModel.ownerName, reposViewModel.repositoryName);

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:gsy_github_app_flutter/common/dao/user_dao.dart';
+import 'package:gsy_github_app_flutter/common/localization/default_localizations.dart';
 import 'package:gsy_github_app_flutter/common/style/gsy_style.dart';
 import 'package:gsy_github_app_flutter/common/utils/common_utils.dart';
 import 'package:gsy_github_app_flutter/common/utils/navigator_utils.dart';
-import 'package:gsy_github_app_flutter/widget/event_item.dart';
+import 'package:gsy_github_app_flutter/widget/gsy_event_item.dart';
 import 'package:gsy_github_app_flutter/widget/state/gsy_list_state.dart';
 import 'package:gsy_github_app_flutter/widget/pull/gsy_pull_load_widget.dart';
 import 'package:gsy_github_app_flutter/widget/gsy_select_item_widget.dart';
 import 'package:gsy_github_app_flutter/widget/gsy_title_bar.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:gsy_github_app_flutter/common/model/Notification.dart' as Model;
+import 'package:gsy_github_app_flutter/model/Notification.dart' as Model;
 
 /**
  * 通知消息
@@ -29,8 +30,6 @@ class _NotifyPageState extends State<NotifyPage>
   final SlidableController slidableController = new SlidableController();
 
   int selectIndex = 0;
-
-  _NotifyPageState();
 
   ///绘制 Item
   _renderItem(index) {
@@ -52,7 +51,7 @@ class _NotifyPageState extends State<NotifyPage>
       ),
       secondaryActions: <Widget>[
         new IconSlideAction(
-          caption: CommonUtils.getLocale(context).notify_readed,
+          caption: GSYLocalizations.i18n(context).notify_readed,
           color: Colors.redAccent,
           icon: Icons.delete,
           onTap: () {
@@ -70,7 +69,7 @@ class _NotifyPageState extends State<NotifyPage>
   _renderEventItem(Model.Notification notification) {
     EventViewModel eventViewModel =
         EventViewModel.fromNotify(context, notification);
-    return new EventItem(eventViewModel, onPressed: () {
+    return new GSYEventItem(eventViewModel, onPressed: () {
       if (notification.unread) {
         UserDao.setNotificationAsReadDao(notification.id.toString());
       }
@@ -122,10 +121,10 @@ class _NotifyPageState extends State<NotifyPage>
   Widget build(BuildContext context) {
     super.build(context); // See AutomaticKeepAliveClientMixin.
     return new Scaffold(
-      backgroundColor: Color(GSYColors.mainBackgroundColor),
+      backgroundColor: GSYColors.mainBackgroundColor,
       appBar: new AppBar(
         title: GSYTitleBar(
-          CommonUtils.getLocale(context).notify_title,
+          GSYLocalizations.i18n(context).notify_title,
           iconData: GSYICons.NOTIFY_ALL_READ,
           needRightLocalIcon: true,
           onPressed: () {
@@ -138,9 +137,9 @@ class _NotifyPageState extends State<NotifyPage>
         ),
         bottom: new GSYSelectItemWidget(
           [
-            CommonUtils.getLocale(context).notify_tab_unread,
-            CommonUtils.getLocale(context).notify_tab_part,
-            CommonUtils.getLocale(context).notify_tab_all,
+            GSYLocalizations.i18n(context).notify_tab_unread,
+            GSYLocalizations.i18n(context).notify_tab_part,
+            GSYLocalizations.i18n(context).notify_tab_all,
           ],
           (selectIndex) {
             this.selectIndex = selectIndex;

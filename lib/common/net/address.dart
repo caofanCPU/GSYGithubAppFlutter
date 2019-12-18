@@ -4,9 +4,8 @@ import 'package:gsy_github_app_flutter/common/config/config.dart';
 class Address {
   static const String host = "https://api.github.com/";
   static const String hostWeb = "https://github.com/";
-  static const String downloadUrl = 'https://www.pgyer.com/GSYGithubApp';
   static const String graphicHost = 'https://ghchart.rshah.org/';
-  static const String updateUrl = 'https://www.pgyer.com/vj2B';
+  static const String updateUrl = 'https://www.pgyer.com/guqa';
 
   ///获取授权  post
   static getAuthorization() {
@@ -166,12 +165,18 @@ class Address {
 
   ///仓库路径下的内容 get
   static reposDataDir(reposOwner, repos, path, [branch = 'master']) {
-    return "${host}repos/$reposOwner/$repos/contents/$path" + ((branch == null) ? "" : ("?ref=" + branch));
+    return "${host}repos/$reposOwner/$repos/contents/$path" +
+        ((branch == null) ? "" : ("?ref=" + branch));
   }
 
   ///README 文件地址 get
   static readmeFile(reposNameFullName, curBranch) {
-    return host + "repos/" + reposNameFullName + "/" + "readme" + ((curBranch == null) ? "" : ("?ref=" + curBranch));
+    return host +
+        "repos/" +
+        reposNameFullName +
+        "/" +
+        "readme" +
+        ((curBranch == null) ? "" : ("?ref=" + curBranch));
   }
 
   ///我的用户信息 GET
@@ -247,7 +252,8 @@ class Address {
 
   ///通知 get
   static getNotifation(all, participating) {
-    if ((all == null && participating == null) || (all == false && participating == false)) {
+    if ((all == null && participating == null) ||
+        (all == false && participating == false)) {
       return "${host}notifications";
     }
     all ??= false;
@@ -271,6 +277,14 @@ class Address {
       return "https://github.com/trending/$languageType?since=$since";
     }
     return "https://github.com/trending?since=$since";
+  }
+
+  ///趋势 get
+  static trendingApi(since, languageType) {
+    if (languageType != null) {
+      return "https://guoshuyu.cn/github/trend/list?languageType=$languageType&since=${since}";
+    }
+    return "https://guoshuyu.cn/github/trend/list?since=$since";
   }
 
   ///处理分页参数

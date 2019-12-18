@@ -1,13 +1,13 @@
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:gsy_github_app_flutter/widget/pull/gsy_refresh_sliver.dart' as IOS;
+import 'package:gsy_github_app_flutter/common/localization/default_localizations.dart';
+import 'package:gsy_github_app_flutter/widget/pull/gsy_refresh_sliver.dart'
+    as IOS;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gsy_github_app_flutter/common/style/gsy_style.dart';
 import 'package:gsy_github_app_flutter/common/utils/common_utils.dart';
-import 'dart:math';
 
 import 'custom_bouncing_scroll_physics.dart';
-import 'gsy_flare_mutli_pull_controller.dart';
 import 'gsy_flare_pull_controller.dart';
 
 const double iosRefreshHeight = 140;
@@ -44,9 +44,10 @@ class GSYPullLoadWidget extends StatefulWidget {
 
 class _GSYPullLoadWidgetState extends State<GSYPullLoadWidget>
     with GSYFlarePullController {
-    //with GSYFlarePullMutliController {
+  //with GSYFlarePullMutliController {
 
-  final GlobalKey<IOS.CupertinoSliverRefreshControlState> sliverRefreshKey = GlobalKey<IOS.CupertinoSliverRefreshControlState>();
+  final GlobalKey<IOS.CupertinoSliverRefreshControlState> sliverRefreshKey =
+      GlobalKey<IOS.CupertinoSliverRefreshControlState>();
 
   ScrollController _scrollController;
 
@@ -212,7 +213,7 @@ class _GSYPullLoadWidgetState extends State<GSYPullLoadWidget>
             SliverSafeArea(
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
+                  (BuildContext context, int index) {
                     return _getItem(index);
                   },
                   childCount: _getListCount(),
@@ -263,7 +264,7 @@ class _GSYPullLoadWidgetState extends State<GSYPullLoadWidget>
                 height: 70.0),
           ),
           Container(
-            child: Text(CommonUtils.getLocale(context).app_empty,
+            child: Text(GSYLocalizations.i18n(context).app_empty,
                 style: GSYConstant.normalText),
           ),
         ],
@@ -287,7 +288,7 @@ class _GSYPullLoadWidgetState extends State<GSYPullLoadWidget>
 
                 ///加载中文本
                 new Text(
-                  CommonUtils.getLocale(context).load_more_text,
+                  GSYLocalizations.i18n(context).load_more_text,
                   style: TextStyle(
                     color: Color(0xFF121917),
                     fontSize: 14.0,
@@ -312,7 +313,7 @@ class _GSYPullLoadWidgetState extends State<GSYPullLoadWidget>
   bool get getPlayAuto => playAuto;
 
   @override
-  double  get refreshTriggerPullDistance => iosRefreshHeight;
+  double get refreshTriggerPullDistance => iosRefreshHeight;
 
   Widget buildSimpleRefreshIndicator(
     BuildContext context,
@@ -345,7 +346,7 @@ class _GSYPullLoadWidgetState extends State<GSYPullLoadWidget>
             controller: this,
             animation: "Earth Moving"
             //animation: "idle"
-        ),
+            ),
       ),
     );
   }

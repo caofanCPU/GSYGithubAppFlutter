@@ -10,14 +10,15 @@
 
 ## 一款跨平台的开源Github客户端App，提供更丰富的功能，更好体验，旨在更好的日常管理和维护个人Github，提供更好更方便的驾车体验～～Σ(￣。￣ﾉ)ﾉ。项目涉及各种常用控件、网络、数据库、设计模式、主题切换、多语言、Redux等。在开发学习过程中，提供丰富的同款对比：
 
-* ### 简单 Flutter 独立学习项目 ( https://github.com/CarGuo/GSYFlutterDemo )
+* ### 简单 Flutter 独立学习项目 ( https://github.com/CarGuo/gsy_flutter_demo )
 * ### 同款Weex版 （ https://github.com/CarGuo/GSYGithubAppWeex ）
 * ### 同款ReactNative版 （ https://github.com/CarGuo/GSYGithubApp ）
 * ### 同款Android Kotlin版本（ https://github.com/CarGuo/GSYGithubAppKotlin ）
 
+* ### [如果克隆太慢，可尝试码云地址下载](https://gitee.com/CarGuo/GSYGithubAppFlutter)
 
 ```!
-基于Flutter开发，适配Android与IOS。
+基于Flutter开发，适配 Android 与 iOS。
 
 项目的目的是为方便个人日常维护和查阅Github，更好的沉浸于码友之间的互基，Github就是你的家。
 
@@ -37,6 +38,10 @@
 > 2、 Scoped Model：目前在 RepositoryDetailPage 出使用
 >
 > 3、 Redux：目前在 MyPage ，UserInfo、Theme、Localization 等上面使用。
+>
+> 4、 LoginPage：另类的 BLoC 模式。
+> 
+> 5、 ReposDao.getRepositoryDetailDao 使用 graphQL
 > 
 > **列表显示有多个，其中：**
 > 
@@ -45,7 +50,7 @@
 >
 > 2、**gsy_pull_new_load_widget.dart.dart**
 > `dynamic_page.dart 等使用，搭配 gsy_bloc_list_state.dart 使用`
-> `有 IOS 和 Android 两种风格下拉风格支持`
+> `有 iOS 和 Android 两种风格下拉风格支持`
 > 
 > 3、**gsy_nested_pull_load_widget.dart**
 > `trend_page.dart 等使用，配置sliver 效果`
@@ -69,6 +74,8 @@
 * ### [Flutter 完整开发实战详解(十四、混合开发打包 Android 篇)](https://juejin.im/post/5cf527036fb9a07ed911acd8)
 * ### [Flutter 完整开发实战详解(十五、全面理解State与Provider)](https://juejin.im/post/5d0634c7f265da1b91639232)
 * ### [Flutter 完整开发实战详解(十六、详解自定义布局实战)](https://juejin.im/post/5d1af0aee51d454fbf540a52)
+* ### [Flutter 完整开发实战详解(十七、 实用技巧与填坑二)](https://juejin.im/post/5d6cb579f265da03da24aeb9)
+* ### [Flutter 完整开发实战详解(十八、 神奇的ScrollPhysics与Simulation)](https://juejin.im/post/5d9067026fb9a04df00ece14)
 
 ----
 * ### [全网最全 Flutter 与 React Native 深入对比分析](https://juejin.im/post/5d0bac156fb9a07ec56e7f15)
@@ -77,13 +84,13 @@
 * ### [目前各种主流状态管理演示Demo](https://github.com/CarGuo/state_manager_demo)
 
 ----
-- ## [Flutter 独立简单学习演示项目](https://github.com/CarGuo/GSYFlutterDemo)
-- ## [Flutter 完整开发实战详解 Gitbook 预览下载](https://github.com/CarGuo/GSYFlutterBook)
-- ## [所有运行问题请点击这里](https://github.com/CarGuo/GSYGithubAppFlutter/issues/13)
+- ## [Flutter 独立简单学习演示项目](https://github.com/CarGuo/gsy_flutter_demo)
+- ## [Flutter 完整开发实战详解 Gitbook 预览下载](https://github.com/CarGuo/gsy_flutter_book)
+- ## [所有运行问题请点击这里](https://github.com/CarGuo/gsy_github_app_flutter/issues/13)
 
 ## 编译运行流程
 
-1、配置好Flutter开发环境(目前Flutter SDK 版本 **1.7.8**)，可参阅 [【搭建环境】](https://flutterchina.club)。
+1、配置好Flutter开发环境(目前Flutter SDK 版本 **1.9.1**)，可参阅 [【搭建环境】](https://flutterchina.club)。
 
 2、clone代码，执行`Packages get`安装第三方包。(因为某些不可抗力原因，国内可能需要设置代理: [代理环境变量](https://flutterchina.club/setup-windows/))
 
@@ -105,7 +112,7 @@
 
 4、运行之前请注意下
 
->### 1、本地Flutter SDK 版本 1.7.8 以上。2、pubspec.yaml 中的第三方包版本和 pubspec.lock 中的是否对应的上
+>### 1、本地Flutter SDK 版本 1.9.1 以上。2、pubspec.yaml 中的第三方包版本和 pubspec.lock 中的是否对应的上
 
 
 ## 项目结构图
@@ -116,13 +123,13 @@
 
 ### 下载
 
-#### Apk下载链接： [Apk下载链接](https://www.pgyer.com/vj2B)
+#### Apk下载链接： [Apk下载链接](https://www.pgyer.com/guqa)
 
 
 | 类型          | 二维码                                      |
 | ----------- | ---------------------------------------- |
 | **Apk二维码**  | ![](https://raw.githubusercontent.com/CarGuo/GSYGithubAppFlutter/master/download.png) |
-| **IOS暂无下载** | ![](https://raw.githubusercontent.com/CarGuo/GSYGithubAppFlutter/master/ios_wait.png) |
+| **iOS暂无下载** | ![](https://raw.githubusercontent.com/CarGuo/GSYGithubAppFlutter/master/ios_wait.png) |
 
 
 
@@ -131,7 +138,7 @@
 
 * 如果包同步失败，一般都是因为没设置包代理，可以参考：[环境变量问题](https://github.com/CarGuo/GSYGithubAppFlutter/issues/13)
 
-
+* [如果克隆太慢，可尝试码云地址下载](https://gitee.com/CarGuo/GSYGithubAppFlutter)
 
 ### 示例图片
 
@@ -148,7 +155,7 @@
 
 ### 第三方框架
 
->当前 Flutter SDK 版本  1.7.8
+>当前 Flutter SDK 版本  1.9.1
 
 | 库                          | 功能             |
 | -------------------------- | -------------- |

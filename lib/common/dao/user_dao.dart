@@ -1,22 +1,23 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:gsy_github_app_flutter/common/ab/provider/user/user_followed_db_provider.dart';
-import 'package:gsy_github_app_flutter/common/ab/provider/user/user_follower_db_provider.dart';
-import 'package:gsy_github_app_flutter/common/ab/provider/user/userinfo_db_provider.dart';
-import 'package:gsy_github_app_flutter/common/ab/provider/user/user_orgs_db_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:gsy_github_app_flutter/common/net/graphql/client.dart';
+import 'package:gsy_github_app_flutter/db/provider/user/user_followed_db_provider.dart';
+import 'package:gsy_github_app_flutter/db/provider/user/user_follower_db_provider.dart';
+import 'package:gsy_github_app_flutter/db/provider/user/userinfo_db_provider.dart';
+import 'package:gsy_github_app_flutter/db/provider/user/user_orgs_db_provider.dart';
 import 'package:gsy_github_app_flutter/common/config/config.dart';
 import 'package:gsy_github_app_flutter/common/config/ignoreConfig.dart';
 import 'package:gsy_github_app_flutter/common/dao/dao_result.dart';
 import 'package:gsy_github_app_flutter/common/local/local_storage.dart';
-import 'package:gsy_github_app_flutter/common/model/Notification.dart';
-import 'package:gsy_github_app_flutter/common/model/User.dart';
-import 'package:gsy_github_app_flutter/common/model/UserOrg.dart';
+import 'package:gsy_github_app_flutter/model/Notification.dart' as Model;
+import 'package:gsy_github_app_flutter/model/SearchUserQL.dart';
+import 'package:gsy_github_app_flutter/model/User.dart';
+import 'package:gsy_github_app_flutter/model/UserOrg.dart';
 import 'package:gsy_github_app_flutter/common/net/address.dart';
 import 'package:gsy_github_app_flutter/common/net/api.dart';
-import 'package:gsy_github_app_flutter/common/redux/locale_redux.dart';
-import 'package:gsy_github_app_flutter/common/redux/user_redux.dart';
+import 'package:gsy_github_app_flutter/redux/locale_redux.dart';
+import 'package:gsy_github_app_flutter/redux/user_redux.dart';
 import 'package:gsy_github_app_flutter/common/utils/common_utils.dart';
 import 'package:redux/redux.dart';
 
@@ -28,6 +29,7 @@ class UserDao {
     if (Config.DEBUG) {
       print("base64Str login " + base64Str);
     }
+
     await LocalStorage.save(Config.USER_NAME_KEY, userName);
     await LocalStorage.save(Config.USER_BASIC_CODE, base64Str);
 
@@ -39,7 +41,8 @@ class UserDao {
     };
     httpManager.clearAuthorization();
 
-    var res = await httpManager.netFetch(Address.getAuthorization(), json.encode(requestParams), null, new Options(method: "post"));
+    var res = await httpManager.netFetch(Address.getAuthorization(),
+        json.encode(requestParams), null, new Options(method: "post"));
     var resultData = null;
     if (res != null && res.result) {
       await LocalStorage.save(Config.PW_KEY, password);
@@ -73,6 +76,7 @@ class UserDao {
     if (localeIndex != null && localeIndex.length != 0) {
       CommonUtils.changeLocale(store, int.parse(localeIndex));
     } else {
+      CommonUtils.curLocale = store.state.platformLocale;
       store.dispatch(RefreshLocaleAction(store.state.platformLocale));
     }
 
@@ -97,9 +101,11 @@ class UserDao {
     next() async {
       var res;
       if (userName == null) {
-        res = await httpManager.netFetch(Address.getMyUserInfo(), null, null, null);
+        res = await httpManager.netFetch(
+            Address.getMyUserInfo(), null, null, null);
       } else {
-        res = await httpManager.netFetch(Address.getUserInfo(userName), null, null, null);
+        res = await httpManager.netFetch(
+            Address.getUserInfo(userName), null, null, null);
       }
       if (res != null && res.result) {
         String starred = "---";
@@ -172,7 +178,8 @@ class UserDao {
     UserFollowerDbProvider provider = new UserFollowerDbProvider();
 
     next() async {
-      String url = Address.getUserFollower(userName) + Address.getPageParams("?", page);
+      String url =
+          Address.getUserFollower(userName) + Address.getPageParams("?", page);
       var res = await httpManager.netFetch(url, null, null, null);
       if (res != null && res.result) {
         List<User> list = new List();
@@ -209,7 +216,8 @@ class UserDao {
   static getFollowedListDao(userName, page, {needDb = false}) async {
     UserFollowedDbProvider provider = new UserFollowedDbProvider();
     next() async {
-      String url = Address.getUserFollow(userName) + Address.getPageParams("?", page);
+      String url =
+          Address.getUserFollow(userName) + Address.getPageParams("?", page);
       var res = await httpManager.netFetch(url, null, null, null);
       if (res != null && res.result) {
         List<User> list = new List();
@@ -245,16 +253,17 @@ class UserDao {
    */
   static getNotifyDao(bool all, bool participating, page) async {
     String tag = (!all && !participating) ? '?' : "&";
-    String url = Address.getNotifation(all, participating) + Address.getPageParams(tag, page);
+    String url = Address.getNotifation(all, participating) +
+        Address.getPageParams(tag, page);
     var res = await httpManager.netFetch(url, null, null, null);
     if (res != null && res.result) {
-      List<Notification> list = new List();
+      List<Model.Notification> list = new List();
       var data = res.data;
       if (data == null || data.length == 0) {
         return new DataResult([], true);
       }
       for (int i = 0; i < data.length; i++) {
-        list.add(Notification.fromJson(data[i]));
+        list.add(Model.Notification.fromJson(data[i]));
       }
       return new DataResult(list, true);
     } else {
@@ -267,7 +276,8 @@ class UserDao {
    */
   static setNotificationAsReadDao(id) async {
     String url = Address.setNotificationAsRead(id);
-    var res = await httpManager.netFetch(url, null, null, new Options(method: "PATCH"), noTip: true);
+    var res = await httpManager
+        .netFetch(url, null, null, new Options(method: "PATCH"), noTip: true);
     return res;
   }
 
@@ -276,7 +286,8 @@ class UserDao {
    */
   static setAllNotificationAsReadDao() async {
     String url = Address.setAllNotificationAsRead();
-    var res = await httpManager.netFetch(url, null, null, new Options(method: "PUT", contentType: ContentType.text));
+    var res =
+        await httpManager.netFetch(url, null, null, new Options(method: "PUT"));
     return new DataResult(res.data, res.result);
   }
 
@@ -285,7 +296,7 @@ class UserDao {
    */
   static checkFollowDao(name) async {
     String url = Address.doFollow(name);
-    var res = await httpManager.netFetch(url, null, null, new Options(contentType: ContentType.text), noTip: true);
+    var res = await httpManager.netFetch(url, null, null, null, noTip: true);
     return new DataResult(res.data, res.result);
   }
 
@@ -294,7 +305,9 @@ class UserDao {
    */
   static doFollowDao(name, bool followed) async {
     String url = Address.doFollow(name);
-    var res = await httpManager.netFetch(url, null, null, new Options(method: !followed ? "PUT" : "DELETE"), noTip: true);
+    var res = await httpManager.netFetch(
+        url, null, null, new Options(method: !followed ? "PUT" : "DELETE"),
+        noTip: true);
     return new DataResult(res.data, res.result);
   }
 
@@ -324,7 +337,8 @@ class UserDao {
    */
   static updateUserDao(params, Store store) async {
     String url = Address.getMyUserInfo();
-    var res = await httpManager.netFetch(url, params, null, new Options(method: "PATCH"));
+    var res = await httpManager.netFetch(
+        url, params, null, new Options(method: "PATCH"));
     if (res != null && res.result) {
       var localResult = await getUserInfoLocal();
       User newUser = User.fromJson(res.data);
@@ -342,7 +356,8 @@ class UserDao {
   static getUserOrgsDao(userName, page, {needDb = false}) async {
     UserOrgsDbProvider provider = new UserOrgsDbProvider();
     next() async {
-      String url = Address.getUserOrgs(userName) + Address.getPageParams("?", page);
+      String url =
+          Address.getUserOrgs(userName) + Address.getPageParams("?", page);
       var res = await httpManager.netFetch(url, null, null, null);
       if (res != null && res.result) {
         List<UserOrg> list = new List();
@@ -371,5 +386,26 @@ class UserDao {
       return dataResult;
     }
     return await next();
+  }
+
+  static searchTrendUserDao(String location,
+      {String cursor, ValueChanged valueChanged}) async {
+    var result = await getTrendUser(location, cursor: cursor);
+    if (result != null && result.data != null) {
+      var endCursor = result.data["search"]["pageInfo"]["endCursor"];
+      var dataList = result.data["search"]["user"];
+      if (dataList == null || dataList.length == 0) {
+        return new DataResult(null, false);
+      }
+      var dataResult = List();
+      valueChanged?.call(endCursor);
+      dataList.forEach((item) {
+        var userModel = SearchUserQL.fromMap(item["user"]);
+        dataResult.add(userModel);
+      });
+      return new DataResult(dataResult, true);
+    } else {
+      return new DataResult(null, false);
+    }
   }
 }
